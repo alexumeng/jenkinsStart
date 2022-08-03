@@ -1,19 +1,21 @@
 pipeline {
     agent any
     environment{
-        DOCKERHUB_CREDS = credentials('dockerhub')
+        DOCKERHUB_CREDS = credentials('dockerhub') // the credentials within jenkins
     }
     stages {
         stage('Clone Repo') {
             steps {
-                checkout scm
+                checkout scm //cloning repo to jenkins engine, can also just put github repo url here
                 sh 'ls *'
             }
         }
-        stage('Build Image') {
+        stage('Build Image') { // this is where you run docker build command
             steps {
                 //sh 'docker build -t raj80dockerid/jenkinstest ./pushdockerimage/' (this will use the tag latest)
-		sh 'docker build -t raj80dockerid/jenkinstest:$BUILD_NUMBER ./pushdockerimage/'
+		sh 'docker build -t alexmeng99/jenkinstest:$BUILD_NUMBER ./pushdockerimage/'
+		    // -t means to tag the image --> tags it with dockerhub user id/repo and the build number
+		    // then specify where to push the docker file --> ./pushdockerimage/
             }
         }
         stage('Docker Login') {
@@ -25,7 +27,7 @@ pipeline {
         stage('Docker Push') {
             steps {
 		//sh 'docker push raj80dockerid/jenkinstest' (this will use the tag latest)    
-                sh 'docker push raj80dockerid/jenkinstest:$BUILD_NUMBER'
+                sh 'docker push alexmeng99/jenkinstest:$BUILD_NUMBER'
                 }
             }
         }
